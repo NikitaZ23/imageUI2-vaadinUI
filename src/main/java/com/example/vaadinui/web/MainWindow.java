@@ -15,6 +15,9 @@ import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import com.vaadin.flow.data.renderer.NativeButtonRenderer;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -32,6 +35,8 @@ public class MainWindow extends AppLayout {
 
     Button button;
 
+    Label label;
+
 //    @Autowired
 //    ImageServiceImp imageServiceImp;
 //    @Autowired
@@ -45,6 +50,7 @@ public class MainWindow extends AppLayout {
         horizontalLayout = new HorizontalLayout();
 
         button = new Button("Refresh");
+        label = new Label("Asd");
 //        grid = new Grid<>();
 
         MultiFileMemoryBuffer buffer = new MultiFileMemoryBuffer();
@@ -52,6 +58,14 @@ public class MainWindow extends AppLayout {
 
         upload.addSucceededListener(event -> {
             //imageServiceImp.createImage(buffer, event.getFileName());
+            RestTemplate restTemplate = new RestTemplate();
+            String fooResourceUrl
+                    = "http://localhost:8081/";
+            ResponseEntity<String> response
+                    = restTemplate.getForEntity(fooResourceUrl, String.class);
+            //Assertions.assertEquals(response.getStatusCode(), HttpStatus.OK);
+            label.setText(response.getBody());
+            System.out.println(response.getBody());
 
             refreshAll();
         });
@@ -73,6 +87,7 @@ public class MainWindow extends AppLayout {
         horizontalLayout.add(button);
         horizontalLayout.setAlignItems(FlexComponent.Alignment.CENTER);
 
+        layout.add(label);
         layout.add(horizontalLayout);
        // layout.add(grid);
 
