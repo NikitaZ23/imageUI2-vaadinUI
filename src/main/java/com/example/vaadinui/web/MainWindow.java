@@ -1,5 +1,7 @@
 package com.example.vaadinui.web;
 
+import com.example.vaadinui.common.ImageFull;
+import com.example.vaadinui.dto.ImageDto;
 import com.example.vaadinui.service.WebService;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -15,11 +17,6 @@ import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import com.vaadin.flow.data.renderer.NativeButtonRenderer;
 import com.vaadin.flow.router.Route;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -30,22 +27,16 @@ public class MainWindow extends AppLayout {
     VerticalLayout layout;
     HorizontalLayout horizontalLayout;
 
-   // Grid<ImageFull> grid;
+    Grid<ImageFull> grid;
 
     MessageInput input;
-   // List<ImageFull> fulls;
+    List<ImageFull> fulls;
 
     Button button;
 
     Label label;
 
-//    @Autowired
-//    ImageServiceImp imageServiceImp;
-//    @Autowired
-//    ImWithTagsServiceImp imWithTagsServiceImp;
-//
-//    @Autowired
-//    TagServiceImp tagServiceImp;
+    WebService service;
 
     public MainWindow() {
         layout = new VerticalLayout();
@@ -53,27 +44,15 @@ public class MainWindow extends AppLayout {
 
         button = new Button("Refresh");
         label = new Label("Asd");
-//        grid = new Grid<>();
+        grid = new Grid<>();
+        service = new WebService();
 
         MultiFileMemoryBuffer buffer = new MultiFileMemoryBuffer();
 
         Upload upload = new Upload(buffer);
 
         upload.addSucceededListener(event -> {
-
-            //imageServiceImp.createImage(buffer, event.getFileName());
-//            RestTemplate restTemplate = new RestTemplate();
-//            String fooResourceUrl
-//                    = "http://localhost:8081/";
-//            ResponseEntity<String> response
-//                    = restTemplate.getForEntity(fooResourceUrl, String.class);
-            //Assertions.assertEquals(response.getStatusCode(), HttpStatus.OK);
-//            label.setText(response.getBody());
-//            System.out.println(response.getBody());
-
-            WebService service = new WebService();
             service.createFile(buffer, event.getFileName());
-
             refreshAll();
         });
 
@@ -83,7 +62,7 @@ public class MainWindow extends AppLayout {
             Notification.show("Filter: " + submitEvent.getValue(),
                     3000, Notification.Position.MIDDLE);
 
-           // grid.setItems(getList(submitEvent.getValue()));
+            grid.setItems(getList(submitEvent.getValue()));
 
         });
 
@@ -96,59 +75,58 @@ public class MainWindow extends AppLayout {
 
         layout.add(label);
         layout.add(horizontalLayout);
-       // layout.add(grid);
+        layout.add(grid);
 
         setContent(layout);
     }
 
-//    @PostConstruct
-//    public void fillGrid() {
-//        grid.addColumn(ImageFull::getName).setHeader("Name");
-//        grid.addColumn(ImageFull::getTags).setHeader("Tags");
-//
-//        grid.addColumn(new NativeButtonRenderer<>("Редактировать", contact -> UI.getCurrent().navigate(FullTags.class).ifPresent(fullTags ->
-//        {
-//            fullTags.setImage(imageServiceImp.findByName(contact.getName()).get());
-//
-//            fullTags.refreshAll();
-//        })));
-//
-//        grid.setItems(getList());
-//    }
+    @PostConstruct
+    public void fillGrid() {
+        grid.addColumn(ImageFull::getName).setHeader("Name");
+        grid.addColumn(ImageFull::getTags).setHeader("Tags");
 
-    public void refreshAll() {
-//        grid.setItems();
-//        grid.setItems(getList());
+        grid.addColumn(new NativeButtonRenderer<>("Редактировать", contact -> UI.getCurrent().navigate(FullTags.class).ifPresent(fullTags ->
+        {
+            fullTags.setImage(service.getImageName(contact.getName()));
+
+            fullTags.refreshAll();
+        })));
+
+        grid.setItems(getList());
     }
 
-//    public List<ImageFull> getList() {
-//        fulls = new ArrayList<>();
-//
-//        imageServiceImp.findAll().forEach(image -> {
-//            List<String> tags = new ArrayList<>();
-//            imWithTagsServiceImp.findById_Im(image.getId()).forEach(imWithTags -> tags.add(imWithTags.getId_tg().getName()));
-//
-//            fulls.add(new ImageFull(image.getName(), tags));
-//        });
-//
-//        return fulls;
-//    }
-//
-//    public List<ImageFull> getList(String nameTag) {
-//        fulls = new ArrayList<>();
-//
-//        System.out.println(nameTag);
-//        imWithTagsServiceImp.findById_Tg(tagServiceImp.findByName(nameTag).orElseThrow(() -> new TagNotFoundExceptions("Tag not found")).getId()).forEach(imWithTags -> {
-//            Image image = imageServiceImp.findById(imWithTags.getId_im()).get();
-//            System.out.println(image.getName());
-//
-//            List<String> tags = new ArrayList<>();
-//            imWithTagsServiceImp.findById_Im(image.getId()).forEach(imWithTags2 -> tags.add(imWithTags2.getId_tg().getName()));
-//
-//            fulls.add(new ImageFull(image.getName(), tags));
-//        });
-//
-//        return fulls;
-//    }
+    public void refreshAll() {
+        grid.setItems();
+        grid.setItems(getList());
+    }
+
+    public List<ImageFull> getList() {
+        fulls = new ArrayList<>();
+
+        service.getImages().forEach(image -> {
+            List<String> tags = new ArrayList<>();
+
+            service.getIwtImages(image.getId()).forEach(imWithTagsDto ->
+                    tags.add(service.getTag(imWithTagsDto.getId_tg()).getName()));
+
+            fulls.add(new ImageFull(image.getName(), tags));
+        });
+
+        return fulls;
+    }
+
+    public List<ImageFull> getList(String nameTag) {
+        fulls = new ArrayList<>();
+
+        service.getIwtTags(service.getTag(nameTag).getId()).forEach(imWithTagsDto -> {
+            ImageDto imageDto = service.getImage(imWithTagsDto.getId_im());
+
+            List<String> tags = new ArrayList<>();
+            service.getIwtImages(imageDto.getId()).forEach(imWithTagsDto2 -> tags.add(service.getTag(imWithTagsDto2.getId_tg()).getName()));
+            fulls.add(new ImageFull(imageDto.getName(), tags));
+        });
+
+        return fulls;
+    }
 
 }

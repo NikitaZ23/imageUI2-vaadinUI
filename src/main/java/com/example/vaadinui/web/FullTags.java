@@ -1,5 +1,8 @@
 package com.example.vaadinui.web;
 
+import com.example.vaadinui.dto.ImageDto;
+import com.example.vaadinui.dto.TagDto;
+import com.example.vaadinui.service.WebService;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.button.Button;
@@ -21,21 +24,15 @@ import java.util.Set;
 
 @Route("tags")
 public class FullTags extends AppLayout {
-  //  Grid<Tag> grid;
+    Grid<TagDto> grid;
     Label label;
-
-   // Image image;
-
+    ImageDto image;
     Button buttonEnd;
-    Button buttonAdd;
     Button buttonSet;
- //   Grid<Tag> grid2;
+    Grid<TagDto> grid2;
 
-//    @Autowired
-//    ImWithTagsServiceImp imWithTagsServiceImp;
-//
-//    @Autowired
-//    TagServiceImp tagServiceImp;
+    WebService service;
+
 
     public FullTags() {
         VerticalLayout layoutMain = new VerticalLayout();
@@ -43,9 +40,11 @@ public class FullTags extends AppLayout {
         VerticalLayout layoutR = new VerticalLayout();
         HorizontalLayout horizontalLayout = new HorizontalLayout();
 
-//        grid = new Grid<>();
-//        grid2 = new Grid<>();
-//        grid2.setSelectionMode(Grid.SelectionMode.MULTI);
+        service = new WebService();
+
+        grid = new Grid<>();
+        grid2 = new Grid<>();
+        grid2.setSelectionMode(Grid.SelectionMode.MULTI);
 
         label = new Label();
         buttonEnd = new Button("Назад");
@@ -72,11 +71,11 @@ public class FullTags extends AppLayout {
 
         layoutMain.add(label);
 
-        //layoutL.add(grid);
+        layoutL.add(grid);
         layoutL.add(buttonEnd);
         layoutL.setMinWidth("600px");
 
-        //layoutR.add(grid2);
+        layoutR.add(grid2);
         layoutR.add(buttonSet);
         layoutR.setMinWidth("600px");
 
@@ -87,34 +86,33 @@ public class FullTags extends AppLayout {
         setContent(layoutMain);
     }
 
-//    public void setImage(Image image) {
-//        this.image = image;
-//    }
-//
-//    public void refreshAll() {
-//        grid.setItems();
-//
-//        label.setText(image.getName());
-//
-//        grid.setItems(imWithTagsServiceImp.getTags(image.getId()));
-//
-//        grid2.setItems();
-//
-//        List<Tag> tags = new ArrayList<>();
-//        tagServiceImp.findAll().forEach(tags::add);
-//
-//        grid2.setItems(tags);
-//    }
-//
-//    @PostConstruct
-//    public void fillGrid() {
-//        grid.addColumn(Tag::getName).setHeader("Name");
-//        grid.addColumn(new NativeButtonRenderer<>("Удалить", contact -> {
-//            System.out.println(contact.getName() + contact.getId());
-//            imWithTagsServiceImp.delete(imWithTagsServiceImp.findByOneObject(image.getId(), contact.getId()).get().getUuid());
-//            refreshAll();
-//        }));
-//
-//        grid2.addColumn(Tag::getName).setHeader("Name");
-//    }
+    public void setImage(ImageDto image) {
+        this.image = image;
+    }
+
+   public void refreshAll() {
+        grid.setItems();
+
+        label.setText(image.getName());
+
+        grid.setItems(service.getIwtTagsName(image.getId()));
+        grid2.setItems();
+
+        List<TagDto> tags = new ArrayList<>();
+        tags.addAll(service.getTags());
+
+        grid2.setItems(tags);
+    }
+
+    @PostConstruct
+    public void fillGrid() {
+        grid.addColumn(TagDto::getName).setHeader("Name");
+        grid.addColumn(new NativeButtonRenderer<>("Удалить", contact -> {
+            service.deleteTag(image.getId(), contact.getId());
+
+            refreshAll();
+        }));
+
+        grid2.addColumn(TagDto::getName).setHeader("Name");
+    }
 }
