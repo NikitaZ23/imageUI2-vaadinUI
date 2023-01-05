@@ -1,5 +1,6 @@
 package com.example.vaadinui.web;
 
+import com.example.vaadinui.service.WebService;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.button.Button;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -54,18 +56,23 @@ public class MainWindow extends AppLayout {
 //        grid = new Grid<>();
 
         MultiFileMemoryBuffer buffer = new MultiFileMemoryBuffer();
+
         Upload upload = new Upload(buffer);
 
         upload.addSucceededListener(event -> {
+
             //imageServiceImp.createImage(buffer, event.getFileName());
-            RestTemplate restTemplate = new RestTemplate();
-            String fooResourceUrl
-                    = "http://localhost:8081/";
-            ResponseEntity<String> response
-                    = restTemplate.getForEntity(fooResourceUrl, String.class);
+//            RestTemplate restTemplate = new RestTemplate();
+//            String fooResourceUrl
+//                    = "http://localhost:8081/";
+//            ResponseEntity<String> response
+//                    = restTemplate.getForEntity(fooResourceUrl, String.class);
             //Assertions.assertEquals(response.getStatusCode(), HttpStatus.OK);
-            label.setText(response.getBody());
-            System.out.println(response.getBody());
+//            label.setText(response.getBody());
+//            System.out.println(response.getBody());
+
+            WebService service = new WebService();
+            service.createFile(buffer, event.getFileName());
 
             refreshAll();
         });
