@@ -2,7 +2,9 @@ package com.example.vaadinui.web;
 
 import com.example.vaadinui.dto.ImageDto;
 import com.example.vaadinui.dto.TagDto;
-import com.example.vaadinui.service.WebService;
+import com.example.vaadinui.service.imp.IWTServiceImp;
+import com.example.vaadinui.service.imp.ImageServiceImp;
+import com.example.vaadinui.service.imp.TagServiceImp;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.button.Button;
@@ -13,12 +15,11 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.renderer.NativeButtonRenderer;
 import com.vaadin.flow.router.Route;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 
 @Route("tags")
@@ -30,8 +31,16 @@ public class FullTags extends AppLayout {
     Button buttonSet;
     Grid<TagDto> grid2;
 
-    WebService service;
+   // WebService service;
 
+    @Autowired
+    TagServiceImp tagService;
+
+    @Autowired
+    ImageServiceImp imageService;
+
+    @Autowired
+    IWTServiceImp iwtService;
 
     public FullTags() {
         VerticalLayout layoutMain = new VerticalLayout();
@@ -39,7 +48,7 @@ public class FullTags extends AppLayout {
         VerticalLayout layoutR = new VerticalLayout();
         HorizontalLayout horizontalLayout = new HorizontalLayout();
 
-        service = new WebService();
+        //service = new WebService();
 
         grid = new Grid<>();
         grid2 = new Grid<>();
@@ -53,12 +62,10 @@ public class FullTags extends AppLayout {
         buttonSet.addClickListener((buttonClickEvent -> {
             GridSelectionModel<TagDto> selectionModel = grid2.getSelectionModel();
 
-            Set<String> tags = new HashSet<>();
+            List<String> tags = new ArrayList<>();
             selectionModel.getSelectedItems().forEach(tag -> tags.add(tag.getName()));
 
-            service.getIwtTagsName(image.getId()).forEach((tag -> tags.add(tag.getName())));
-
-            service.createIWT(image.getId(), new ArrayList<>(tags));
+            iwtService.updateIWT(image.getId(), tags);
 
             refreshAll();
         }));
@@ -89,11 +96,11 @@ public class FullTags extends AppLayout {
 
         label.setText(image.getName());
 
-        grid.setItems(service.getIwtTagsName(image.getId()));
+        grid.setItems(iwtService.getIwtTagsName(image.getId()));
         grid2.setItems();
 
         List<TagDto> tags = new ArrayList<>();
-        tags.addAll(service.getTags());
+        tags.addAll(tagService.getTags());
 
         grid2.setItems(tags);
     }
@@ -102,7 +109,7 @@ public class FullTags extends AppLayout {
     public void fillGrid() {
         grid.addColumn(TagDto::getName).setHeader("Name");
         grid.addColumn(new NativeButtonRenderer<>("Удалить", contact -> {
-            service.deleteTag(image.getId(), contact.getId());
+            iwtService.deleteTag(image.getId(), contact.getId());
 
             refreshAll();
         }));

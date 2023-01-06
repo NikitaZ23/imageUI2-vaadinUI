@@ -2,7 +2,9 @@ package com.example.vaadinui.web;
 
 import com.example.vaadinui.common.ImageFull;
 import com.example.vaadinui.dto.ImageDto;
-import com.example.vaadinui.service.WebService;
+import com.example.vaadinui.service.imp.IWTServiceImp;
+import com.example.vaadinui.service.imp.ImageServiceImp;
+import com.example.vaadinui.service.imp.TagServiceImp;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.button.Button;
@@ -17,6 +19,7 @@ import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import com.vaadin.flow.data.renderer.NativeButtonRenderer;
 import com.vaadin.flow.router.Route;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -36,7 +39,16 @@ public class MainWindow extends AppLayout {
 
     Label label;
 
-    WebService service;
+    //WebService service;
+
+    @Autowired
+    TagServiceImp tagService;
+
+    @Autowired
+    ImageServiceImp imageService;
+
+    @Autowired
+    IWTServiceImp iwtService;
 
     public MainWindow() {
         layout = new VerticalLayout();
@@ -45,14 +57,14 @@ public class MainWindow extends AppLayout {
         button = new Button("Refresh");
         label = new Label("Asd");
         grid = new Grid<>();
-        service = new WebService();
+        //service = new WebService();
 
         MultiFileMemoryBuffer buffer = new MultiFileMemoryBuffer();
 
         Upload upload = new Upload(buffer);
 
         upload.addSucceededListener(event -> {
-            service.createFile(buffer, event.getFileName());
+            imageService.createFile(buffer, event.getFileName());
             refreshAll();
         });
 
@@ -87,7 +99,7 @@ public class MainWindow extends AppLayout {
 
         grid.addColumn(new NativeButtonRenderer<>("Редактировать", contact -> UI.getCurrent().navigate(FullTags.class).ifPresent(fullTags ->
         {
-            fullTags.setImage(service.getImageName(contact.getName()));
+            fullTags.setImage(imageService.getImageName(contact.getName()));
 
             fullTags.refreshAll();
         })));
@@ -103,11 +115,11 @@ public class MainWindow extends AppLayout {
     public List<ImageFull> getList() {
         fulls = new ArrayList<>();
 
-        service.getImages().forEach(image -> {
+        imageService.getImages().forEach(image -> {
             List<String> tags = new ArrayList<>();
 
-            service.getIwtImages(image.getId()).forEach(imWithTagsDto ->
-                    tags.add(service.getTag(imWithTagsDto.getId_tg()).getName()));
+            iwtService.getIwtImages(image.getId()).forEach(imWithTagsDto ->
+                    tags.add(tagService.getTag(imWithTagsDto.getId_tg()).getName()));
 
             fulls.add(new ImageFull(image.getName(), tags));
         });
@@ -118,11 +130,11 @@ public class MainWindow extends AppLayout {
     public List<ImageFull> getList(String nameTag) {
         fulls = new ArrayList<>();
 
-        service.getIwtTags(service.getTag(nameTag).getId()).forEach(imWithTagsDto -> {
-            ImageDto imageDto = service.getImage(imWithTagsDto.getId_im());
+        iwtService.getIwtTags(tagService.getTag(nameTag).getId()).forEach(imWithTagsDto -> {
+            ImageDto imageDto = imageService.getImage(imWithTagsDto.getId_im());
 
             List<String> tags = new ArrayList<>();
-            service.getIwtImages(imageDto.getId()).forEach(imWithTagsDto2 -> tags.add(service.getTag(imWithTagsDto2.getId_tg()).getName()));
+            iwtService.getIwtImages(imageDto.getId()).forEach(imWithTagsDto2 -> tags.add(tagService.getTag(imWithTagsDto2.getId_tg()).getName()));
             fulls.add(new ImageFull(imageDto.getName(), tags));
         });
 
