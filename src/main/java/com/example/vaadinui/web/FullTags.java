@@ -13,7 +13,6 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.renderer.NativeButtonRenderer;
 import com.vaadin.flow.router.Route;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -51,23 +50,18 @@ public class FullTags extends AppLayout {
         buttonEnd.addClickListener((event -> UI.getCurrent().navigate(MainWindow.class)));
 
         buttonSet = new Button("Привязать");
-//        buttonSet.addClickListener((buttonClickEvent -> {
-//            GridSelectionModel<Tag> selectionModel = grid2.getSelectionModel();
-//
-//            Set<String> tags = new HashSet<>();
-//            selectionModel.getSelectedItems().forEach(tag ->
-//            {
-//                tags.add(tag.getName());
-//                System.out.println(tag.getName() + " OOOOOOOOOOOO");
-//            });
-//
-//            imWithTagsServiceImp.getTags(image.getId()).forEach((tag -> tags.add(tag.getName())));
-//
-//            tags.forEach(s -> System.out.println(s + " LLLLLLLLLLLLLL"));
-//
-//            imWithTagsServiceImp.createIWT(image.getId(), new ArrayList<>(tags));
-//            refreshAll();
-//        }));
+        buttonSet.addClickListener((buttonClickEvent -> {
+            GridSelectionModel<TagDto> selectionModel = grid2.getSelectionModel();
+
+            Set<String> tags = new HashSet<>();
+            selectionModel.getSelectedItems().forEach(tag -> tags.add(tag.getName()));
+
+            service.getIwtTagsName(image.getId()).forEach((tag -> tags.add(tag.getName())));
+
+            service.createIWT(image.getId(), new ArrayList<>(tags));
+
+            refreshAll();
+        }));
 
         layoutMain.add(label);
 
@@ -90,7 +84,7 @@ public class FullTags extends AppLayout {
         this.image = image;
     }
 
-   public void refreshAll() {
+    public void refreshAll() {
         grid.setItems();
 
         label.setText(image.getName());

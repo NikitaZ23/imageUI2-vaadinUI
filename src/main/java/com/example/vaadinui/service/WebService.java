@@ -95,6 +95,10 @@ public class WebService {
         return Arrays.stream(objects).collect(Collectors.toList());
     }
 
+    public void createIWT(int imageID, List<String> list){
+        restTemplate.postForObject("http://localhost:8081/iwt/" + imageID, list, ResponseEntity.class);
+    }
+
     public void deleteTag(int id_im, int id_tg){
         restTemplate = new RestTemplate(new CustomHttpComponentsClientHttpRequestFactory());
         FindIWTRequest findIWTRequest = new FindIWTRequest(id_im, id_tg);
