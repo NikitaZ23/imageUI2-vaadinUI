@@ -37,7 +37,6 @@ public class MainWindow extends AppLayout {
 
     Button button;
 
-    Label label;
 
     //WebService service;
 
@@ -55,7 +54,6 @@ public class MainWindow extends AppLayout {
         horizontalLayout = new HorizontalLayout();
 
         button = new Button("Refresh");
-        label = new Label("Asd");
         grid = new Grid<>();
         //service = new WebService();
 
@@ -85,7 +83,6 @@ public class MainWindow extends AppLayout {
         horizontalLayout.add(button);
         horizontalLayout.setAlignItems(FlexComponent.Alignment.CENTER);
 
-        layout.add(label);
         layout.add(horizontalLayout);
         layout.add(grid);
 
