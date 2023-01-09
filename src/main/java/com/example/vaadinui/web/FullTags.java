@@ -59,7 +59,8 @@ public class FullTags extends AppLayout {
 
             iwtService.updateIWT(image.getId(), tags);
 
-            refreshAll();
+            grid.setItems(iwtService.getIwtTagsName(image.getId()));
+            (grid2.getSelectionModel()).deselectAll();
         }));
 
         layoutMain.add(label);
