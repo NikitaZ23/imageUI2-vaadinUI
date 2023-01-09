@@ -3,7 +3,6 @@ package com.example.vaadinui.web;
 import com.example.vaadinui.dto.ImageDto;
 import com.example.vaadinui.dto.TagDto;
 import com.example.vaadinui.service.imp.IWTServiceImp;
-import com.example.vaadinui.service.imp.ImageServiceImp;
 import com.example.vaadinui.service.imp.TagServiceImp;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -31,13 +30,8 @@ public class FullTags extends AppLayout {
     Button buttonSet;
     Grid<TagDto> grid2;
 
-   // WebService service;
-
     @Autowired
     TagServiceImp tagService;
-
-    @Autowired
-    ImageServiceImp imageService;
 
     @Autowired
     IWTServiceImp iwtService;
@@ -47,8 +41,6 @@ public class FullTags extends AppLayout {
         VerticalLayout layoutL = new VerticalLayout();
         VerticalLayout layoutR = new VerticalLayout();
         HorizontalLayout horizontalLayout = new HorizontalLayout();
-
-        //service = new WebService();
 
         grid = new Grid<>();
         grid2 = new Grid<>();
@@ -99,8 +91,7 @@ public class FullTags extends AppLayout {
         grid.setItems(iwtService.getIwtTagsName(image.getId()));
         grid2.setItems();
 
-        List<TagDto> tags = new ArrayList<>();
-        tags.addAll(tagService.getTags());
+        List<TagDto> tags = new ArrayList<>(tagService.getTags());
 
         grid2.setItems(tags);
     }

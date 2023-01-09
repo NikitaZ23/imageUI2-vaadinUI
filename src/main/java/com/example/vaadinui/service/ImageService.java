@@ -6,7 +6,7 @@ import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import java.util.List;
 
 public interface ImageService {
-    void createFile(MultiFileMemoryBuffer buffer, String fileName);
+    ImageDto createFile(MultiFileMemoryBuffer buffer, String fileName);
 
     List<ImageDto> getImages();
 

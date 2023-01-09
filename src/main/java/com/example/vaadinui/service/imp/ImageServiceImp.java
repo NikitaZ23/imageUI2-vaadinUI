@@ -25,7 +25,7 @@ public class ImageServiceImp implements ImageService {
 
     @SneakyThrows
     @Override
-    public void createFile(MultiFileMemoryBuffer buffer, String fileName) {
+    public ImageDto createFile(MultiFileMemoryBuffer buffer, String fileName) {
         InputStream inputStream = buffer.getInputStream(fileName);
         System.out.println(fileName);
 
@@ -45,6 +45,7 @@ public class ImageServiceImp implements ImageService {
         file.delete();
         System.out.println("response status: " + response.getStatusCode());
         System.out.println("response body: " + response.getBody());
+        return response.getBody();
     }
     @Override
     public List<ImageDto> getImages() {

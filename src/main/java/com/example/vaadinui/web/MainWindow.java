@@ -9,7 +9,6 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.messages.MessageInput;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -37,9 +36,6 @@ public class MainWindow extends AppLayout {
 
     Button button;
 
-
-    //WebService service;
-
     @Autowired
     TagServiceImp tagService;
 
@@ -55,7 +51,6 @@ public class MainWindow extends AppLayout {
 
         button = new Button("Refresh");
         grid = new Grid<>();
-        //service = new WebService();
 
         MultiFileMemoryBuffer buffer = new MultiFileMemoryBuffer();
 
