@@ -12,25 +12,26 @@ import java.util.stream.Collectors;
 
 @Service
 public class TagServiceImp implements TagService {
+    private static final String HTTP_LOCALHOST_8081_TAGS = "http://localhost:8081/tags";
     RestTemplate restTemplate = new RestTemplate();
 
     @Override
     public TagDto getTag(int id) {
-        ResponseEntity<TagDto> responseEntity = restTemplate.getForEntity("http://localhost:8081/tags/tg/" + id, TagDto.class);
+        ResponseEntity<TagDto> responseEntity = restTemplate.getForEntity(HTTP_LOCALHOST_8081_TAGS + "/tg/" + id, TagDto.class);
 
         return responseEntity.getBody();
     }
 
     @Override
     public TagDto getTag(String name) {
-        ResponseEntity<TagDto> responseEntity = restTemplate.getForEntity("http://localhost:8081/tags/name/" + name, TagDto.class);
+        ResponseEntity<TagDto> responseEntity = restTemplate.getForEntity(HTTP_LOCALHOST_8081_TAGS + "/name/" + name, TagDto.class);
 
         return responseEntity.getBody();
     }
 
     @Override
     public List<TagDto> getTags() {
-        ResponseEntity<TagDto[]> responseEntity = restTemplate.getForEntity("http://localhost:8081/tags", TagDto[].class);
+        ResponseEntity<TagDto[]> responseEntity = restTemplate.getForEntity(HTTP_LOCALHOST_8081_TAGS, TagDto[].class);
         TagDto[] objects = responseEntity.getBody();
 
         return Arrays.stream(objects).collect(Collectors.toList());

@@ -1,4 +1,4 @@
-package com.example.vaadinui.common;
+package com.example.vaadinui.dto.requests;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

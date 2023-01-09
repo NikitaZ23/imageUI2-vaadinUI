@@ -1,6 +1,6 @@
 package com.example.vaadinui.service.imp;
 
-import com.example.vaadinui.common.FindIWTRequest;
+import com.example.vaadinui.dto.requests.FindIWTRequest;
 import com.example.vaadinui.dto.ImWithTagsDto;
 import com.example.vaadinui.dto.TagDto;
 import com.example.vaadinui.service.IWTService;
@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class IWTServiceImp implements IWTService {
+    private static final String HTTP_LOCALHOST_8081_IWT = "http://localhost:8081/iwt";
     RestTemplate restTemplate = new RestTemplate();
 
     @Autowired
@@ -29,7 +30,7 @@ public class IWTServiceImp implements IWTService {
 
     @Override
     public List<ImWithTagsDto> getIwtTags(int id) {
-        ResponseEntity<ImWithTagsDto[]> responseEntity = restTemplate.getForEntity("http://localhost:8081/iwt/tg/" + id, ImWithTagsDto[].class);
+        ResponseEntity<ImWithTagsDto[]> responseEntity = restTemplate.getForEntity(HTTP_LOCALHOST_8081_IWT + "/tg/" + id, ImWithTagsDto[].class);
         ImWithTagsDto[] objects = responseEntity.getBody();
 
         return Arrays.stream(objects).collect(Collectors.toList());
@@ -45,7 +46,7 @@ public class IWTServiceImp implements IWTService {
 
     @Override
     public List<ImWithTagsDto> getIwtImages(int id) {
-        ResponseEntity<ImWithTagsDto[]> responseEntity = restTemplate.getForEntity("http://localhost:8081/iwt/im/" + id, ImWithTagsDto[].class);
+        ResponseEntity<ImWithTagsDto[]> responseEntity = restTemplate.getForEntity(HTTP_LOCALHOST_8081_IWT + "/im/" + id, ImWithTagsDto[].class);
         ImWithTagsDto[] objects = responseEntity.getBody();
 
         return Arrays.stream(objects).collect(Collectors.toList());
@@ -53,7 +54,7 @@ public class IWTServiceImp implements IWTService {
 
     @Override
     public void updateIWT(int imageID, List<String> list) {
-        restTemplate.put("http://localhost:8081/iwt/" + imageID, list, ResponseEntity.class);
+        restTemplate.put(HTTP_LOCALHOST_8081_IWT + "/" + imageID, list, ResponseEntity.class);
     }
 
     @Override
@@ -64,11 +65,11 @@ public class IWTServiceImp implements IWTService {
 
         System.out.println(findIWTRequest);
 
-        ResponseEntity<ImWithTagsDto> responseEntity = restTemplate.exchange("http://localhost:8081/iwt/oneOb", HttpMethod.GET, request, ImWithTagsDto.class);
+        ResponseEntity<ImWithTagsDto> responseEntity = restTemplate.exchange(HTTP_LOCALHOST_8081_IWT + "/oneOb", HttpMethod.GET, request, ImWithTagsDto.class);
         ImWithTagsDto imWithTagsDto = responseEntity.getBody();
         System.out.println(imWithTagsDto);
 
-        restTemplate.delete("http://localhost:8081/iwt/" + imWithTagsDto.getUuid());
+        restTemplate.delete(HTTP_LOCALHOST_8081_IWT + "/" + imWithTagsDto.getUuid());
     }
 
     private static final class CustomHttpComponentsClientHttpRequestFactory extends HttpComponentsClientHttpRequestFactory {

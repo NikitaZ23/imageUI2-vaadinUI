@@ -1,28 +1,6 @@
 package com.example.vaadinui.service;
 
-import com.example.vaadinui.common.FindIWTRequest;
-import com.example.vaadinui.dto.ImWithTagsDto;
-import com.example.vaadinui.dto.ImageDto;
-import com.example.vaadinui.dto.TagDto;
-import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
-import lombok.SneakyThrows;
-import org.apache.commons.io.FileUtils;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.http.*;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-
-import java.io.File;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class WebService {
 

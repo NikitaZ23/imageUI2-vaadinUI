@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class ImageServiceImp implements ImageService {
+    private static final String HTTP_LOCALHOST_8081_IMAGES = "http://localhost:8081/images";
     RestTemplate restTemplate = new RestTemplate();
 
     @SneakyThrows
@@ -38,7 +39,7 @@ public class ImageServiceImp implements ImageService {
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(bodyMap, headers);
 
-        ResponseEntity<ImageDto> response = restTemplate.exchange("http://localhost:8081/images/",
+        ResponseEntity<ImageDto> response = restTemplate.exchange(HTTP_LOCALHOST_8081_IMAGES + "/",
                 HttpMethod.POST, requestEntity, ImageDto.class);
 
         file.delete();
@@ -47,20 +48,20 @@ public class ImageServiceImp implements ImageService {
     }
     @Override
     public List<ImageDto> getImages() {
-        ResponseEntity<ImageDto[]> responseEntity = restTemplate.getForEntity("http://localhost:8081/images", ImageDto[].class);
+        ResponseEntity<ImageDto[]> responseEntity = restTemplate.getForEntity(HTTP_LOCALHOST_8081_IMAGES, ImageDto[].class);
         ImageDto[] objects = responseEntity.getBody();
 
         return Arrays.stream(objects).collect(Collectors.toList());
     }
     @Override
     public ImageDto getImageName(String name) {
-        ResponseEntity<ImageDto> responseEntity = restTemplate.getForEntity("http://localhost:8081/images/im/" + name, ImageDto.class);
+        ResponseEntity<ImageDto> responseEntity = restTemplate.getForEntity(HTTP_LOCALHOST_8081_IMAGES + "/im/" + name, ImageDto.class);
 
         return responseEntity.getBody();
     }
     @Override
     public ImageDto getImage(int id) {
-        ResponseEntity<ImageDto> responseEntity = restTemplate.getForEntity("http://localhost:8081/images/id/" + id, ImageDto.class);
+        ResponseEntity<ImageDto> responseEntity = restTemplate.getForEntity(HTTP_LOCALHOST_8081_IMAGES + "/id/" + id, ImageDto.class);
 
         return responseEntity.getBody();
     }
